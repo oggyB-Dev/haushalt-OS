@@ -24,4 +24,9 @@ public sealed class JwtOptions
     /// Gültigkeitsdauer des Access Tokens in Minuten
     /// </summary>
     public int AccessTokenMinutes { get; init; } = 15;
+
+    /// <summary>
+    /// Gültigkeitsdauer des Refresh Tokens in Tagen
+    /// </summary>
+    public int RefreshTokenDays { get; init; } = 30;
 }
