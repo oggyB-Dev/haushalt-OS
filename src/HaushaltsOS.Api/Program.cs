@@ -1,3 +1,8 @@
+using HaushaltOS.Api.Common.Auth;
+using HaushaltOS.Api.Common.Persistence;
+
+using Microsoft.EntityFrameworkCore;
+
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +14,14 @@ builder.Services.AddSerilog((options =>
 builder.Services.AddProblemDetails();
 builder.Services.AddHealthChecks()
     .AddNpgSql(builder.Configuration.GetConnectionString("Postgres")!);
+
+builder.Services.AddDbContextPool<AppDbContext>(options => 
+    options.UseNpgsql(builder.Configuration.GetConnectionString("Postgres"))
+);
+
+builder.Services
+    .AddIdentityCore<AppUser>()
+    .AddEntityFrameworkStores<AppDbContext>();
 
 var app = builder.Build();
 
