@@ -5,6 +5,7 @@ using HaushaltOS.Api.Common.Persistence;
 
 using HaushaltsOS.Api.Common.Auth;
 using HaushaltsOS.Api.Features.Auth.Login;
+using HaushaltsOS.Api.Features.Auth.Refresh;
 using HaushaltsOS.Api.Features.Auth.Register;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -64,6 +65,7 @@ app.UseSerilogRequestLogging();
 
 app.MapRegister();
 app.MapLogin();
+app.MapRefresh();
 app.MapHealthChecks("/health");
 
 app.Run();

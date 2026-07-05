@@ -1,5 +1,7 @@
 using HaushaltOS.Api.Common.Auth;
 
+using HaushaltsOS.Api.Common.DTOs;
+
 namespace HaushaltsOS.Api.Common.Auth;
 
 /// <summary>
@@ -20,4 +22,12 @@ public interface ITokenService
     /// </summary>
     /// <returns>Das Refresh Token im Klartext für den Client</returns>
     Task<string> CreateRefreshTokenAsync(AppUser user, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Löst ein Refresh Token ein
+    /// Prüft Gültigkeit, widerruft das alte 
+    /// und stellt ein neues Token Paar aus (Rotation)
+    /// </summary>
+    /// <returns>Neues Token Paar oder null wenn das Token ungültig ist</returns>
+    Task<AuthResponse?> RotateRefreshTokenAsync(string rawToken, CancellationToken cancellationToken);
 }

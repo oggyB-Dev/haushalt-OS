@@ -6,6 +6,9 @@ using System.Text;
 using HaushaltOS.Api.Common.Auth;
 using HaushaltOS.Api.Common.Persistence;
 
+using HaushaltsOS.Api.Common.DTOs;
+
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -78,5 +81,38 @@ public sealed class TokenService(IOptions<JwtOptions> options, AppDbContext dbCo
     {
         byte[] bytes = SHA256.HashData(Encoding.UTF8.GetBytes(token));
         return Convert.ToHexString(bytes);
+    }
+
+    /// <inheritdoc/>
+    public async Task<AuthResponse?> RotateRefreshTokenAsync(string rawToken, CancellationToken cancellationToken)
+    {
+        // Eingereichtes Token hashen und in der DB suchen
+        string tokenHash = HashToken(rawToken);
+        RefreshToken? stored = await dbContext.RefreshTokens
+            .FirstOrDefaultAsync(x => x.Tokenhash == tokenHash, cancellationToken);
+        
+        // Nicht gefunden oder nicht mehr aktiv 
+        if(stored is null || !stored.IsActive)
+        {
+            return null;
+        }
+
+        // Zugehörigen User laden
+        AppUser? user = await dbContext.Users
+            .FirstOrDefaultAsync(x => x.Id == stored.UserId, cancellationToken);
+        
+        if(user is null)
+        {
+            return null;
+        }
+
+        // Rotation altes Token widerrufen
+        stored.RevokedAtUtc = DateTime.UtcNow;
+
+        // Neues Token Paar ausstellen
+        string newAccessToken = CreateAccessToken(user);
+        string newRefreshToken = await CreateRefreshTokenAsync(user, cancellationToken);
+
+        return new AuthResponse(newAccessToken, newRefreshToken);
     }
 }
