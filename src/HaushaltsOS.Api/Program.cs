@@ -4,6 +4,7 @@ using HaushaltOS.Api.Common.Auth;
 using HaushaltOS.Api.Common.Persistence;
 
 using HaushaltsOS.Api.Common.Auth;
+using HaushaltsOS.Api.Features.Auth.Register;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -60,7 +61,7 @@ app.UseStatusCodePages();
 
 app.UseSerilogRequestLogging();
 
-app.MapGet("/", () => "Hello World!");
+app.MapRegister();
 app.MapHealthChecks("/health");
 
 app.Run();
