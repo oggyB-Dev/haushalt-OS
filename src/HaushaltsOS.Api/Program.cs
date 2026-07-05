@@ -7,6 +7,8 @@ builder.Services.AddSerilog((options =>
 ));
 
 builder.Services.AddProblemDetails();
+builder.Services.AddHealthChecks()
+    .AddNpgSql(builder.Configuration.GetConnectionString("Postgres")!);
 
 var app = builder.Build();
 
@@ -16,5 +18,6 @@ app.UseStatusCodePages();
 app.UseSerilogRequestLogging();
 
 app.MapGet("/", () => "Hello World!");
+app.MapHealthChecks("/health");
 
 app.Run();
