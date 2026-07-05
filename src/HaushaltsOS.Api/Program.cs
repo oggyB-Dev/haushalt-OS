@@ -3,6 +3,8 @@ using System.Text;
 using HaushaltOS.Api.Common.Auth;
 using HaushaltOS.Api.Common.Persistence;
 
+using HaushaltsOS.Api.Common.Auth;
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -43,6 +45,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             )
         };
     });
+
+builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 builder.Services.AddAuthorization();
 
