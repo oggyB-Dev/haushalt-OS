@@ -20,6 +20,14 @@ builder.Services.AddSerilog((options =>
     options.ReadFrom.Configuration(builder.Configuration)
 ));
 
+builder.Services.AddCors(options => 
+    options.AddPolicy("Frontend", policy => 
+        policy.WithOrigins("http://localhost:4200")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+    )
+);
+
 builder.Services.AddProblemDetails();
 builder.Services.AddHealthChecks()
     .AddNpgSql(builder.Configuration.GetConnectionString("Postgres")!);
@@ -57,6 +65,7 @@ builder.Services.AddAuthorization();
 var app = builder.Build();
 
 app.UseExceptionHandler();
+app.UseCors("Frontend");
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseStatusCodePages();
