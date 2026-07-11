@@ -26,6 +26,24 @@ export class AuthService {
         this.tokenStoreService.setTokens(response.accessToken, response.refreshToken);
     }
 
+    /** Stellt die Sitzung beim Appstart aus dem Refreshtoken wieder her. */
+    async restoreSession() : Promise<void> {
+        const refreshToken = this.tokenStoreService.getRefreshToken();
+
+        if(refreshToken === null){
+            return;
+        }
+
+        try{
+            const response = await firstValueFrom(
+                this.http.post<AuthResponse>(`${this.apiUrl}/auth/refresh`, {refreshToken})
+            );
+            this.tokenStoreService.setTokens(response.accessToken, response.refreshToken);
+        } catch{
+            this.tokenStoreService.clear();
+        }
+    }
+
     /** Meldet den Benutzer ab */
     logout(): void{
         this.tokenStoreService.clear();
