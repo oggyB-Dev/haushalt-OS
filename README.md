@@ -1,5 +1,7 @@
 # Haushalts OS
 
+![CI](https://github.com/oggyB-Dev/haushalt-OS/actions/workflows/ci.yml/badge.svg)
+
 > Selbst gehostete Haushalts Plattform für zwei Nutzer: Einkaufsliste mit
 > Echtzeit Sync, Dokumentenverwaltung mit lokaler KI (OCR, Fristen-Erkennung),
 > Haushaltsbuch mit Kassenbon-Scan, gemeinsamer Kalender mit Push-Erinnerungen
