@@ -66,6 +66,9 @@
               "buildTarget": "haushalts-os:build:development"
             }
           },
+          "options": {
+            "proxyConfig": "proxy.conf.json"
+          },
           "defaultConfiguration": "development"
         },
         "test": {

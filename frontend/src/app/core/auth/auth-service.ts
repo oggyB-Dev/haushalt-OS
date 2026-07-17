@@ -10,7 +10,7 @@ export class AuthService {
     private readonly http = inject(HttpClient);
     private readonly tokenStoreService = inject(TokenStoreService);
 
-    private readonly apiUrl = "http://localhost:5237";
+    private readonly apiUrl = "/api";
 
     /**Prüfen ob der Benutzer aktuell angemeldet ist */
     readonly isAuthenticated = computed(() => 
