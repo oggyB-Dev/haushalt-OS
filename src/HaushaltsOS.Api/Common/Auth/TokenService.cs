@@ -3,8 +3,8 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 
-using HaushaltOS.Api.Common.Auth;
-using HaushaltOS.Api.Common.Persistence;
+using HaushaltsOS.Api.Common.Auth;
+using HaushaltsOS.Api.Common.Persistence;
 
 using HaushaltsOS.Api.Common.DTOs;
 

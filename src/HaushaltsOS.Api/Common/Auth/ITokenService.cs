@@ -1,4 +1,4 @@
-using HaushaltOS.Api.Common.Auth;
+using HaushaltsOS.Api.Common.Auth;
 
 using HaushaltsOS.Api.Common.DTOs;
 
