@@ -64,6 +64,13 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
+// Ausstehende Migrationen beim Start anwenden
+using (var scope = app.Services.CreateScope())
+{
+    AppDbContext dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await dbContext.Database.MigrateAsync();
+}
+
 app.UseExceptionHandler();
 app.UseCors("Frontend");
 app.UseAuthentication();

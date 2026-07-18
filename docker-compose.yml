@@ -37,6 +37,34 @@ services:
       timeout: 5s
       retries: 10
 
+  api:
+    build:
+      context: ./src/HaushaltsOS.Api
+    ports:
+      - "127.0.0.1:8080:8080"
+    environment:
+      ConnectionStrings__Postgres: "Host=postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
+      Jwt__Key: ${JWT_KEY}
+      Jwt__Issuer: haushalts-os
+      Jwt__Audience: haushalts-os
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8080/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "127.0.0.1:3000:80"
+    depends_on:
+      api:
+        condition: service_healthy
+
 volumes:
   postgres_data:
   ollama_models:
