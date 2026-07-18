@@ -27,7 +27,7 @@ In aktiver Entwicklung — aktueller Stand: v0 (Fundament)
 
 ## Roadmap
 
-- [ ] v0 — Fundament: Auth, Docker, CI, Deployment
+- [X] v0 — Fundament: Auth, Docker, CI, Deployment
 - [ ] v1 — Einkaufsliste (Echtzeit + local-first)
 - [ ] v2 — Dokumente (Upload, Kategorien, Access Control)
 - [ ] v3 — KI: Dokument-Intelligenz + semantische Suche
