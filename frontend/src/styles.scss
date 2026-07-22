@@ -1,1 +1,46 @@
 /* You can add global styles to this file, and also import other style files */
+@use "tailwindcss";
+@use "@fontsource/nunito"; 
+@use "@fontsource/caveat";
+
+@theme {
+  /* Basis */
+  --color-cream: #faf6f0;
+  --color-surface: #ffffff;
+  --color-ink: #2d2a32;
+  --color-ink-soft: #6b6572;   /* Sekundärtext */
+
+  /* Primär: Violett */
+  --color-primary: #7c5cfc;
+  --color-primary-soft: #ede9fe;   /* Flächen, Hover, Chips */
+  --color-primary-strong: #6344e0; /* Hover/Active auf Buttons */
+
+  /* Akzent */
+  --color-accent: #ff7f6b;
+  --color-accent-soft: #ffe8e3;
+
+  /* Semantik */
+  --color-danger: #e5484d;
+  --color-success: #46a758;
+
+  /* Formsprache: weich und rund */
+  --radius-card: 1.25rem;
+  --radius-control: 0.875rem;
+
+  /* Typografie */
+  --font-sans: "Nunito", ui-sans-serif, system-ui, sans-serif;
+  --font-hand: "Caveat", cursive;
+}
+
+.dot-grid {
+  background-image: radial-gradient(circle, rgb(45 42 50 / 0.06) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+@layer components {
+  .input-field {
+    @apply w-full rounded-control border border-ink/10 bg-cream/50 px-4 py-3 text-base text-ink
+           placeholder:text-ink-soft/50 outline-none transition
+           focus:border-primary focus:ring-2 focus:ring-primary/30;
+  }
+}

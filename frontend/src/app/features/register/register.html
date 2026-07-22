@@ -1,0 +1,69 @@
+<main class="dot-grid relative flex min-h-dvh items-center justify-center overflow-hidden bg-cream p-6">
+
+  <div class="absolute -top-24 -right-16 h-72 w-72 rounded-full bg-accent-soft blur-3xl" aria-hidden="true"></div>
+  <div class="absolute -bottom-20 -left-12 h-64 w-64 rounded-full bg-primary-soft blur-3xl" aria-hidden="true"></div>
+
+  <div class="relative w-full max-w-sm">
+    <header class="mb-8 text-center">
+      <h1 class="text-3xl font-extrabold tracking-tight text-ink">Willkommen! 👋</h1>
+      <p class="mt-3 font-hand text-2xl text-ink-soft">Gründet euren Haushalt — oder tritt einem bei.</p>
+    </header>
+    <app-card>
+      <form (submit)="onSubmit($event)">
+        <div class="space-y-5">
+  
+          <div>
+            <label for="displayName" class="mb-1.5 block text-sm font-semibold text-ink">Anzeigename</label>
+            <input id="displayName" type="text" [formField]="registerForm.displayName" placeholder="Oggy" class="input-field" />
+            @for (error of registerForm.displayName().errors(); track error.kind) {
+              <p class="mt-1.5 text-sm text-danger">{{ error.message }}</p>
+            }
+          </div>
+  
+          <div>
+            <label for="email" class="mb-1.5 block text-sm font-semibold text-ink">E-Mail</label>
+            <input id="email" type="email" [formField]="registerForm.email" placeholder="du@beispiel.de" class="input-field" />
+            @for (error of registerForm.email().errors(); track error.kind) {
+              <p class="mt-1.5 text-sm text-danger">{{ error.message }}</p>
+            }
+          </div>
+  
+          <div>
+            <label for="password" class="mb-1.5 block text-sm font-semibold text-ink">Passwort</label>
+            <input id="password" type="password" [formField]="registerForm.password" class="input-field"/>
+            @for (error of registerForm.password().errors(); track error.kind) {
+              <p class="mt-1.5 text-sm text-danger">{{ error.message }}</p>
+            }
+          </div>
+  
+          <div>
+            <label for="inviteCode" class="mb-1.5 block text-sm font-semibold text-ink">
+              Einladungscode <span class="font-normal text-ink-soft">(optional)</span>
+            </label>
+            <input id="inviteCode" type="text" [formField]="registerForm.inviteCode" placeholder="Z. B. K7MPQ2XW"
+                   autocapitalize="characters" autocomplete="off" spellcheck="false"
+                   class="input-field" />
+            <p class="mt-1.5 font-hand text-lg text-ink-soft">Leer lassen, um einen neuen Haushalt zu gründen ✨</p>
+          </div>
+  
+          @if (serverError(); as message) {
+            <p class="rounded-control bg-accent-soft px-4 py-3 text-sm font-medium text-danger">{{ message }}</p>
+          }
+  
+          <app-button type="submit" [disabled]="registerForm().submitting() || !registerForm().valid()">
+            @if (registerForm().submitting()) { 
+                Einen Moment… 
+            } @else { 
+                Loslegen 
+            }
+          </app-button>
+  
+          <p class="text-center text-sm text-ink-soft">
+            Schon dabei?
+            <a routerLink="/login" class="font-semibold text-primary hover:text-primary-strong">Anmelden</a>
+          </p>
+        </div>
+      </form>
+    </app-card>
+  </div>
+</main>

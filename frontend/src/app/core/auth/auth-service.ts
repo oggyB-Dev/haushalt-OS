@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { computed, inject, Service } from '@angular/core';
 import { TokenStoreService } from './token-store-service';
-import { AuthResponse, LoginRequest } from '../../shared/dtos/auth.dtos';
+import { AuthResponse, LoginRequest, RegisterRequest } from '../../shared/dtos/auth.dtos';
 import { firstValueFrom } from 'rxjs';
 
 /**Kapselt Login, Logout und Session Wiederherstellung gegen die Auth api */
@@ -42,6 +42,14 @@ export class AuthService {
         } catch{
             this.tokenStoreService.clear();
         }
+    }
+
+    /* Registriert einen neuen Benutzer und meldet ihn direkt an */
+    async register(request: RegisterRequest): Promise<void> {
+        const response = await firstValueFrom(
+            this.http.post<AuthResponse>(`${this.apiUrl}/auth/register`, request)
+        );
+        this.tokenStoreService.setTokens(response.accessToken, response.refreshToken);
     }
 
     /** Meldet den Benutzer ab */

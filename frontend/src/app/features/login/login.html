@@ -1,34 +1,60 @@
-<main class="login">
-    <h1>Haushalts OS</h1>
+<main class="dot-grid relative flex min-h-dvh items-center justify-center overflow-hidden bg-cream p-6">
+  <div class="absolute -top-24 -left-16 h-72 w-72 rounded-full bg-primary-soft blur-3xl" aria-hidden="true"></div>
+  <div class="absolute -right-12 -bottom-20 h-64 w-64 rounded-full bg-accent-soft blur-3xl" aria-hidden="true"></div>
 
-    <form (submit)="onSubmit($event)">
-        <label>
-            E-Mail
-            <input type="email" [formField]="loginForm.email" />
-        </label>
-        @for (error of loginForm.email().errors(); track error.kind)
-        {
-            <p class="error">{{error.message}}</p>
-        }
-
-        <label>
-            Passwort
-            <input type="password" [formField]="loginForm.password" />
-        </label>
-        @for (error of loginForm.password().errors(); track error.kind) {
-            <p class="error">{{ error.message }}</p>
-        }
-
-        @if(serverError(); as message){
-            <p class="error">{{message}}</p>
-        }
-        
-        <button type="submit" [disabled]="loginForm().submitting() || !loginForm().valid()">
-            @if(loginForm().submitting()){
-                Anmelden..
-            }@else {
-                Anmelden
+  <div class="relative w-full max-w-sm">
+    <header class="mb-8 text-center">
+      <h1 class="text-4xl font-extrabold tracking-tight text-ink">
+        <span class="relative inline-block">
+          Haushalts
+          <svg class="absolute -bottom-2 left-0 w-full" viewBox="0 0 120 10" aria-hidden="true">
+            <path d="M2 7 Q 15 2, 30 6 T 60 6 T 90 6 T 118 5"
+                  fill="none" stroke="var(--color-accent)" stroke-width="3" stroke-linecap="round" />
+          </svg>
+        </span>
+        <span class="ml-1 inline-block -rotate-6 rounded-lg bg-primary px-2 py-0.5 text-2xl text-white shadow-sm">OS</span>
+      </h1>
+      <p class="mt-4 font-hand text-2xl text-ink-soft">Euer Zuhause, organisiert.</p>
+    </header>
+    <app-card>
+      <form (submit)="onSubmit($event)">
+        <div class="space-y-5">
+  
+          <div>
+            <label for="email" class="mb-1.5 block text-sm font-semibold text-ink">E-Mail</label>
+            <input id="email" type="email" [formField]="loginForm.email" placeholder="test@beispiel.de"
+                  class="input-field" />
+            @for (error of loginForm.email().errors(); track error.kind) {
+              <p class="mt-1.5 text-sm text-danger">{{ error.message }}</p>
             }
-        </button>
-    </form>
+          </div>
+  
+          <div>
+            <label for="password" class="mb-1.5 block text-sm font-semibold text-ink">Passwort</label>
+            <input id="password" type="password" [formField]="loginForm.password"
+                  class="input-field" />
+            @for (error of loginForm.password().errors(); track error.kind) {
+              <p class="mt-1.5 text-sm text-danger">{{ error.message }}</p>
+            }
+          </div>
+  
+          @if (serverError(); as message) {
+            <p class="rounded-control bg-accent-soft px-4 py-3 text-sm font-medium text-danger">{{ message }}</p>
+          }
+  
+          <app-button type="submit" [disabled]="loginForm().submitting() || !loginForm().valid()">
+            @if (loginForm().submitting()) { 
+              Anmelden… 
+            } @else { 
+              Anmelden 
+            }
+          </app-button>
+          <p class="text-center text-sm text-ink-soft">
+              Noch kein Konto?
+              <a routerLink="/register" class="font-semibold text-primary hover:text-primary-strong">Registrieren</a>
+          </p>
+        </div>
+      </form>
+    </app-card>
+  </div>
 </main>
