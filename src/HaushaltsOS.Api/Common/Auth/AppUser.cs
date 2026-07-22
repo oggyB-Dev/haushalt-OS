@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace HaushaltOS.Api.Common.Auth;
+namespace HaushaltsOS.Api.Common.Auth;
 
 /// <summary>
 /// Anwendungsnutzer. Erbt alle Identity Felder 

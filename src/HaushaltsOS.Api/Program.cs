@@ -1,9 +1,7 @@
 using System.Text;
 
-using HaushaltOS.Api.Common.Auth;
-using HaushaltOS.Api.Common.Persistence;
-
 using HaushaltsOS.Api.Common.Auth;
+using HaushaltsOS.Api.Common.Persistence;
 using HaushaltsOS.Api.Features.Auth.Login;
 using HaushaltsOS.Api.Features.Auth.Refresh;
 using HaushaltsOS.Api.Features.Auth.Register;
@@ -43,6 +41,7 @@ builder.Services
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
+        options.MapInboundClaims = false;
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
@@ -59,6 +58,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<CurrentUser>();
 
 builder.Services.AddAuthorization();
 

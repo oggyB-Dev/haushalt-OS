@@ -1,4 +1,4 @@
-using HaushaltOS.Api.Common.Auth;
+using HaushaltsOS.Api.Common.Auth;
 
 using HaushaltsOS.Api.Common.DTOs;
 
@@ -14,7 +14,7 @@ public interface ITokenService
     /// </summary>
     /// <param name="user">Der Benutzer, für den das Token ausgestellt wird.</param>
     /// <returns>Das signierte Token als String</returns>
-    string CreateAccessToken(AppUser user);
+    Task<string> CreateAccessTokenAsync(AppUser user, CancellationToken cancellationToken);
 
     /// <summary>
     /// Erzeugt ein neues Refresh Token, speichert dessen Hash in der Datenbank

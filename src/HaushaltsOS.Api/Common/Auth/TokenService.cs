@@ -3,14 +3,14 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 
-using HaushaltOS.Api.Common.Auth;
-using HaushaltOS.Api.Common.Persistence;
+using HaushaltsOS.Api.Common.Persistence;
 
 using HaushaltsOS.Api.Common.DTOs;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using HaushaltsOS.Api.Common.Households;
 
 namespace HaushaltsOS.Api.Common.Auth;
 
@@ -23,15 +23,24 @@ public sealed class TokenService(IOptions<JwtOptions> options, AppDbContext dbCo
     private readonly JwtOptions _jwtOptions = options.Value;
 
     /// <inheritdoc/>
-    public string CreateAccessToken(AppUser user)
+    public async Task<string> CreateAccessTokenAsync(AppUser user, CancellationToken cancellationToken)
     {
+        HouseholdMember? membership = await dbContext.HouseholdMembers
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.UserId == user.Id, cancellationToken );
+
         // Aussagen über den Benutzer, die im Token stehen
-        Claim[] claims =
+        List<Claim> claims =
         [
             new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new(JwtRegisteredClaimNames.Email, user.Email!),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         ];
+
+        if(membership is not null)
+        {
+            claims.Add(new Claim("household_id", membership.HouseholdId.ToString()));
+        }
 
         // Signatur Header + Payload werden mit dem geheimen Key signiert (HS256)
         SymmetricSecurityKey? key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Key));
@@ -110,7 +119,7 @@ public sealed class TokenService(IOptions<JwtOptions> options, AppDbContext dbCo
         stored.RevokedAtUtc = DateTime.UtcNow;
 
         // Neues Token Paar ausstellen
-        string newAccessToken = CreateAccessToken(user);
+        string newAccessToken = await CreateAccessTokenAsync(user, cancellationToken);
         string newRefreshToken = await CreateRefreshTokenAsync(user, cancellationToken);
 
         return new AuthResponse(newAccessToken, newRefreshToken);
