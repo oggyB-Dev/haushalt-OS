@@ -9,3 +9,11 @@ export interface LoginRequest{
     email: string;
     password: string;
 }
+
+/* Anfrage zur Registrierung eines neuen Benutzers */
+export interface RegisterRequest {
+    displayName: string;
+    email: string;
+    password: string;
+    inviteCode?: string;
+}
