@@ -96,7 +96,7 @@ public static class RegisterEndpoint
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        string accessToken = tokenService.CreateAccessToken(user);
+        string accessToken = await tokenService.CreateAccessTokenAsync(user, cancellationToken);
         string refreshToken = await tokenService.CreateRefreshTokenAsync(user, cancellationToken);
         
         await transaction.CommitAsync(cancellationToken);

@@ -43,7 +43,7 @@ public static class LoginEndpoint
             );
         }
 
-        string accessToken = tokenService.CreateAccessToken(user);
+        string accessToken = await tokenService.CreateAccessTokenAsync(user, cancellationToken);
         string refreshToken = await tokenService.CreateRefreshTokenAsync(user, cancellationToken);
 
         return Results.Ok(new AuthResponse(
