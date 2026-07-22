@@ -36,3 +36,11 @@
   background-image: radial-gradient(circle, rgb(45 42 50 / 0.06) 1px, transparent 1px);
   background-size: 20px 20px;
 }
+
+@layer components {
+  .input-field {
+    @apply w-full rounded-control border border-ink/10 bg-cream/50 px-4 py-3 text-base text-ink
+           placeholder:text-ink-soft/50 outline-none transition
+           focus:border-primary focus:ring-2 focus:ring-primary/30;
+  }
+}

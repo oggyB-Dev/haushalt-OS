@@ -2,11 +2,13 @@ import { Component, inject, signal } from '@angular/core';
 import { AuthService } from '../../core/auth/auth-service';
 import { Router, RouterLink } from '@angular/router';
 import { email, form, FormField, minLength, required, submit } from '@angular/forms/signals';
+import { Card } from "../../shared/ui/card";
+import { Button } from "../../shared/ui/button";
 
 
 @Component({
   selector: 'app-register',
-  imports: [FormField, RouterLink],
+  imports: [FormField, RouterLink, Card, Button],
   templateUrl: './register.html',
   styleUrl: './register.scss',
 })

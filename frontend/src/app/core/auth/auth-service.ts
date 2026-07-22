@@ -44,6 +44,7 @@ export class AuthService {
         }
     }
 
+    /* Registriert einen neuen Benutzer und meldet ihn direkt an */
     async register(request: RegisterRequest): Promise<void> {
         const response = await firstValueFrom(
             this.http.post<AuthResponse>(`${this.apiUrl}/auth/register`, request)

@@ -16,48 +16,45 @@
       </h1>
       <p class="mt-4 font-hand text-2xl text-ink-soft">Euer Zuhause, organisiert.</p>
     </header>
-
-    <form (submit)="onSubmit($event)"
-          class="rounded-card bg-surface p-6 shadow-lg shadow-primary/5 ring-1 ring-ink/5">
-      <div class="space-y-5">
-
-        <div>
-          <label for="email" class="mb-1.5 block text-sm font-semibold text-ink">E-Mail</label>
-          <input id="email" type="email" [formField]="loginForm.email" placeholder="test@beispiel.de"
-                 class="w-full rounded-control border border-ink/10 bg-cream/50 px-4 py-3 text-base text-ink
-                        placeholder:text-ink-soft/50 outline-none transition
-                        focus:border-primary focus:ring-2 focus:ring-primary/30" />
-          @for (error of loginForm.email().errors(); track error.kind) {
-            <p class="mt-1.5 text-sm text-danger">{{ error.message }}</p>
+    <app-card>
+      <form (submit)="onSubmit($event)">
+        <div class="space-y-5">
+  
+          <div>
+            <label for="email" class="mb-1.5 block text-sm font-semibold text-ink">E-Mail</label>
+            <input id="email" type="email" [formField]="loginForm.email" placeholder="test@beispiel.de"
+                  class="input-field" />
+            @for (error of loginForm.email().errors(); track error.kind) {
+              <p class="mt-1.5 text-sm text-danger">{{ error.message }}</p>
+            }
+          </div>
+  
+          <div>
+            <label for="password" class="mb-1.5 block text-sm font-semibold text-ink">Passwort</label>
+            <input id="password" type="password" [formField]="loginForm.password"
+                  class="input-field" />
+            @for (error of loginForm.password().errors(); track error.kind) {
+              <p class="mt-1.5 text-sm text-danger">{{ error.message }}</p>
+            }
+          </div>
+  
+          @if (serverError(); as message) {
+            <p class="rounded-control bg-accent-soft px-4 py-3 text-sm font-medium text-danger">{{ message }}</p>
           }
+  
+          <app-button type="submit" [disabled]="loginForm().submitting() || !loginForm().valid()">
+            @if (loginForm().submitting()) { 
+              Anmelden… 
+            } @else { 
+              Anmelden 
+            }
+          </app-button>
+          <p class="text-center text-sm text-ink-soft">
+              Noch kein Konto?
+              <a routerLink="/register" class="font-semibold text-primary hover:text-primary-strong">Registrieren</a>
+          </p>
         </div>
-
-        <div>
-          <label for="password" class="mb-1.5 block text-sm font-semibold text-ink">Passwort</label>
-          <input id="password" type="password" [formField]="loginForm.password"
-                 class="w-full rounded-control border border-ink/10 bg-cream/50 px-4 py-3 text-base text-ink
-                        outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/30" />
-          @for (error of loginForm.password().errors(); track error.kind) {
-            <p class="mt-1.5 text-sm text-danger">{{ error.message }}</p>
-          }
-        </div>
-
-        @if (serverError(); as message) {
-          <p class="rounded-control bg-accent-soft px-4 py-3 text-sm font-medium text-danger">{{ message }}</p>
-        }
-
-        <button type="submit"
-                [disabled]="loginForm().submitting() || !loginForm().valid()"
-                class="w-full rounded-control bg-primary px-4 py-3.5 text-base font-bold text-white transition
-                       hover:bg-primary-strong active:scale-[0.98]
-                       disabled:pointer-events-none disabled:opacity-50">
-          @if (loginForm().submitting()) { Anmelden… } @else { Anmelden }
-        </button>
-        <p class="text-center text-sm text-ink-soft">
-            Noch kein Konto?
-            <a routerLink="/register" class="font-semibold text-primary hover:text-primary-strong">Registrieren</a>
-        </p>
-      </div>
-    </form>
+      </form>
+    </app-card>
   </div>
 </main>
