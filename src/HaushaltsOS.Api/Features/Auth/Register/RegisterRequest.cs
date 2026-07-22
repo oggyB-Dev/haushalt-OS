@@ -24,4 +24,9 @@ public sealed class RegisterRequest
     /// </summary>
     [Required, MinLength(8)]
     public string? Password { get; init; }
+
+    /// <summary>
+    /// Einladungscode eines bestehenden Haushalts
+    /// </summary>
+    public string? InviteCode { get; init; }
 }

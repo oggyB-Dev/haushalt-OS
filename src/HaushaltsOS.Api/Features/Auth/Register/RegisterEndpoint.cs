@@ -1,8 +1,11 @@
 using HaushaltsOS.Api.Common.Auth;
 using HaushaltsOS.Api.Common.DTOs;
+using HaushaltsOS.Api.Common.Households;
+using HaushaltsOS.Api.Common.Persistence;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace HaushaltsOS.Api.Features.Auth.Register;
 
@@ -19,9 +22,8 @@ public static class RegisterEndpoint
         app.MapPost("/auth/register", HandleAsync);
     }
 
-    private static async Task<IResult> HandleAsync([FromBody] RegisterRequest request, UserManager<AppUser> userManager, ITokenService tokenService, CancellationToken cancellationToken)
+    private static async Task<IResult> HandleAsync([FromBody] RegisterRequest request, AppDbContext dbContext,UserManager<AppUser> userManager, ITokenService tokenService, CancellationToken cancellationToken)
     {
-        // Prüfen, ob die Email bereits vergeben ist
         AppUser? existing = await userManager.FindByEmailAsync(request.Email!);
 
         if(existing is not null)
@@ -32,7 +34,25 @@ public static class RegisterEndpoint
             );
         }
 
-        AppUser user = new AppUser
+        Household? householdToJoin = null;
+
+        if(!string.IsNullOrWhiteSpace(request.InviteCode))
+        {
+            householdToJoin = await dbContext.Households
+                .FirstOrDefaultAsync(x => x.InviteCode == request.InviteCode, cancellationToken);
+
+            if(householdToJoin is null)
+            {
+                return Results.Problem(
+                    title: "Ungültiger Einladungscode.",
+                    statusCode: StatusCodes.Status400BadRequest
+                );
+            }
+        }
+
+        await using var transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken);
+
+        AppUser user = new()
         {
             UserName = request.Email,
             Email = request.Email,
@@ -51,9 +71,36 @@ public static class RegisterEndpoint
             );
         }
 
+        HouseholdRole role = HouseholdRole.Member;
+
+        if(householdToJoin is null)
+        {
+            householdToJoin = new Household
+            {
+                Id = Guid.NewGuid(),
+                Name = $"Haushalt von {request.DisplayName}",
+                InviteCode = InviteCodeGenerator.Generate(),
+                CreatedAtUtc = DateTime.UtcNow
+            };
+            dbContext.Households.Add(householdToJoin);
+            role = HouseholdRole.Owner;
+        }
+
+        dbContext.HouseholdMembers.Add(new HouseholdMember
+        {
+            HouseholdId = householdToJoin.Id,
+            UserId = user.Id,
+            Role = role,
+            JoinedAtUtc = DateTime.UtcNow
+        });
+
+        await dbContext.SaveChangesAsync(cancellationToken);
+
         string accessToken = tokenService.CreateAccessToken(user);
         string refreshToken = await tokenService.CreateRefreshTokenAsync(user, cancellationToken);
-
+        
+        await transaction.CommitAsync(cancellationToken);
+        
         return Results.Ok(new AuthResponse(
             accessToken,
             refreshToken
