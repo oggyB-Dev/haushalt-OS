@@ -1,5 +1,6 @@
 using HaushaltsOS.Api.Common.Auth;
 using HaushaltsOS.Api.Common.Households;
+using HaushaltsOS.Api.Features.ShoppingList;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -14,6 +15,11 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
     /// Gespeicherte Refresh Tokens
     /// </summary>
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+
+    /// <summary>
+    /// Artikel der Einkaufsliste
+    /// </summary>
+    public DbSet<ShoppingItem> ShoppingItems => Set<ShoppingItem>();
 
     /// <summary>
     /// Haushalte
@@ -37,5 +43,9 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
         builder.Entity<Household>()
             .HasIndex(x => x.InviteCode)
             .IsUnique();
+        
+        // Alle Artikel eines Haushalts
+        builder.Entity<ShoppingItem>()
+            .HasIndex(x => x.HouseholdId);
     }
 }
