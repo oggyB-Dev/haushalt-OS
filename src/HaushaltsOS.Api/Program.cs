@@ -82,7 +82,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<CurrentUser>();
 
 builder.Services.AddAuthorization();
-builder.Services.AddSignalR().AddMessagePackProtocol();
+builder.Services.AddSignalR();
 
 var app = builder.Build();
 
