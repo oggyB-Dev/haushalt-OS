@@ -7,6 +7,7 @@ using HaushaltsOS.Api.Features.Auth.Refresh;
 using HaushaltsOS.Api.Features.Auth.Register;
 using HaushaltsOS.Api.Features.ShoppingList.CreateItem;
 using HaushaltsOS.Api.Features.ShoppingList.GetItems;
+using HaushaltsOS.Api.Features.ShoppingList.ToggleItem;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -87,6 +88,7 @@ app.MapLogin();
 app.MapRefresh();
 app.MapCreateItem();
 app.MapGetItems();
+app.MapToggleItem();
 app.MapHealthChecks("/health");
 
 app.Run();
