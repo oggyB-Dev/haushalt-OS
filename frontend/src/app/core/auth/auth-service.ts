@@ -3,12 +3,14 @@ import { computed, inject, Service } from '@angular/core';
 import { TokenStoreService } from './token-store-service';
 import { AuthResponse, LoginRequest, RegisterRequest } from '../../shared/dtos/auth.dtos';
 import { firstValueFrom } from 'rxjs';
+import { RealtimeService } from '../realtime/realtime-service';
 
 /**Kapselt Login, Logout und Session Wiederherstellung gegen die Auth api */
 @Service()
 export class AuthService {
     private readonly http = inject(HttpClient);
     private readonly tokenStoreService = inject(TokenStoreService);
+    private readonly realtime = inject(RealtimeService);
 
     private readonly apiUrl = "/api";
 
@@ -24,6 +26,7 @@ export class AuthService {
         );
 
         this.tokenStoreService.setTokens(response.accessToken, response.refreshToken);
+        await this.realtime.connect();
     }
 
     /** Stellt die Sitzung beim Appstart aus dem Refreshtoken wieder her. */
@@ -39,6 +42,8 @@ export class AuthService {
                 this.http.post<AuthResponse>(`${this.apiUrl}/auth/refresh`, {refreshToken})
             );
             this.tokenStoreService.setTokens(response.accessToken, response.refreshToken);
+
+            await this.realtime.connect();
         } catch{
             this.tokenStoreService.clear();
         }
@@ -50,10 +55,12 @@ export class AuthService {
             this.http.post<AuthResponse>(`${this.apiUrl}/auth/register`, request)
         );
         this.tokenStoreService.setTokens(response.accessToken, response.refreshToken);
+        await this.realtime.connect();
     }
 
     /** Meldet den Benutzer ab */
     logout(): void{
+        void this.realtime.disconnect();
         this.tokenStoreService.clear();
     }
 }
