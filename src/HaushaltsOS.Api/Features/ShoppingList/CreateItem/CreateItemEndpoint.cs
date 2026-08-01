@@ -1,8 +1,10 @@
 using HaushaltsOS.Api.Common.Auth;
 using HaushaltsOS.Api.Common.DTOs;
 using HaushaltsOS.Api.Common.Persistence;
+using HaushaltsOS.Api.Common.Realtime;
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace HaushaltsOS.Api.Features.ShoppingList.CreateItem;
@@ -21,7 +23,7 @@ public static class CreateItemEndpoint
             .RequireAuthorization();
     }
 
-    private static async Task<IResult> HandleAsync([FromBody] CreateItemRequest request, AppDbContext dbContext, CurrentUser currentUser, CancellationToken cancellationToken)
+    private static async Task<IResult> HandleAsync([FromBody] CreateItemRequest request, AppDbContext dbContext, CurrentUser currentUser, IHubContext<ShoppingListHub> hub,CancellationToken cancellationToken)
     {
         // Prüfen ob der Artikel bereits in der Einkaufsliste vorhanden ist
         bool exists = await dbContext.ShoppingItems
@@ -54,7 +56,7 @@ public static class CreateItemEndpoint
         dbContext.ShoppingItems.Add(item);
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return Results.Created($"/shopping-items/{item.Id}",new ShoppingItemResponse(
+        ShoppingItemResponse response = new ShoppingItemResponse(
             item.Id,
             item.Name,
             item.Category,
@@ -62,6 +64,13 @@ public static class CreateItemEndpoint
             item.IsChecked,
             item.CheckedByUserId,
             item.CheckedAtUtc
-        ));
+        );
+
+        // Den neuen Artikel an alle Clients im Haushalt senden
+        await hub.Clients
+            .Group(ShoppingListHub.GroupName(currentUser.HouseholdId))
+            .SendAsync("ItemAdded", response, cancellationToken);
+
+        return Results.Created($"/shopping-items/{item.Id}",response);
     }
 }

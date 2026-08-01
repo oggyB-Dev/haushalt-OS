@@ -1,6 +1,8 @@
 using HaushaltsOS.Api.Common.Auth;
 using HaushaltsOS.Api.Common.Persistence;
+using HaushaltsOS.Api.Common.Realtime;
 
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace HaushaltsOS.Api.Features.ShoppingList.DeleteItem;
@@ -19,7 +21,7 @@ public static class DeleteItemEndpoint
             .RequireAuthorization();
     }
 
-    private static async Task<IResult> HandleAsync(Guid id, AppDbContext dbContext, CurrentUser currentUser, CancellationToken cancellationToken)
+    private static async Task<IResult> HandleAsync(Guid id, AppDbContext dbContext, CurrentUser currentUser, IHubContext<ShoppingListHub> hub,CancellationToken cancellationToken)
     {
         ShoppingItem? item = await dbContext.ShoppingItems
             .FirstOrDefaultAsync(x => x.Id == id && x.HouseholdId == currentUser.HouseholdId, cancellationToken);
@@ -35,6 +37,11 @@ public static class DeleteItemEndpoint
 
         dbContext.ShoppingItems.Remove(item);
         await dbContext.SaveChangesAsync(cancellationToken);
+
+        // An alle Clients in der Gruppe senden, dass der Artikel gelöscht wurde
+        await hub.Clients
+            .Group(ShoppingListHub.GroupName(currentUser.HouseholdId))
+            .SendAsync("ItemDeleted", item.Id, cancellationToken);
 
         return Results.NoContent();
     }

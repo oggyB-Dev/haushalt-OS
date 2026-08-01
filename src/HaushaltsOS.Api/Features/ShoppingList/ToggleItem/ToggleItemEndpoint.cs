@@ -1,7 +1,9 @@
 using HaushaltsOS.Api.Common.Auth;
 using HaushaltsOS.Api.Common.DTOs;
 using HaushaltsOS.Api.Common.Persistence;
+using HaushaltsOS.Api.Common.Realtime;
 
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace HaushaltsOS.Api.Features.ShoppingList.ToggleItem;
@@ -20,7 +22,7 @@ public static class ToggleItemEndpoint
             .RequireAuthorization();
     }
 
-    private static async Task<IResult> HandleAsync(Guid id, AppDbContext dbContext, CurrentUser currentUser, CancellationToken cancellationToken)
+    private static async Task<IResult> HandleAsync(Guid id, AppDbContext dbContext, CurrentUser currentUser, IHubContext<ShoppingListHub> hub,CancellationToken cancellationToken)
     {
         ShoppingItem? item = await dbContext.ShoppingItems
             .FirstOrDefaultAsync(x => x.Id == id && x.HouseholdId == currentUser.HouseholdId, cancellationToken);
@@ -50,8 +52,8 @@ public static class ToggleItemEndpoint
 
         // Änderungen in der Datenbank speichern
         await dbContext.SaveChangesAsync(cancellationToken);
-        
-        return Results.Ok(new ShoppingItemResponse(
+
+        var response = new ShoppingItemResponse(
             item.Id,
             item.Name,
             item.Category,
@@ -59,6 +61,13 @@ public static class ToggleItemEndpoint
             item.IsChecked,
             item.CheckedByUserId,
             item.CheckedAtUtc
-        ));
+        );
+
+        // An alle Clients in der Gruppe senden, dass der Artikel abgehakt wurde
+        await hub.Clients
+            .Group(ShoppingListHub.GroupName(currentUser.HouseholdId))
+            .SendAsync("ItemToggled", response, cancellationToken);
+        
+        return Results.Ok(response);
     }
 }
