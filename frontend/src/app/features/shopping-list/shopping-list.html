@@ -1,0 +1,85 @@
+<h1 class="mb-1 text-2xl font-extrabold text-ink">Einkaufsliste</h1>
+<p class="mb-5 font-hand text-xl text-ink-soft">Was fehlt zu Hause?</p>
+
+<div class="mb-6 space-y-2">
+  <div class="flex gap-2">
+    <input type="text"
+           placeholder="z. B. Milch"
+           class="input-field flex-1"
+           [value]="newItemName()"
+           (input)="newItemName.set($any($event.target).value)"
+           (keydown.enter)="add()" />
+
+    <select class="input-field w-36"
+            [value]="newItemCategory()"
+            (change)="newItemCategory.set(+$any($event.target).value)">
+      @for (category of categories; track category.value) {
+        <option [value]="category.value">{{ category.label }}</option>
+      }
+    </select>
+  </div>
+
+  <app-button (click)="add()">Hinzufügen</app-button>
+</div>
+
+<section class="mt-8">
+  @if (openItems().length === 0) {
+    <div class="rounded-card bg-surface p-8 text-center ring-1 ring-ink/5">
+      <p class="font-hand text-2xl text-ink-soft">Alles besorgt! ✨</p>
+    </div>
+  } @else {
+    <div class="space-y-5">
+      @for (group of groupedOpenItems(); track group.label) {
+        <div>
+          <h2 class="mb-2 text-sm font-semibold text-ink-soft">{{ group.label }}</h2>
+          <ul class="space-y-2">
+            @for (item of group.items; track item.id) {
+              <li class="flex items-center gap-3 rounded-control bg-surface px-4 py-3 ring-1 ring-ink/5">
+                <!-- Abhaken: 44px Tippfläche, der sichtbare Kreis bleibt 24px -->
+                <button type="button"
+                        (click)="toggle(item.id)"
+                        class="group -m-2.5 flex size-11 shrink-0 items-center justify-center"
+                        aria-label="Artikel abhaken">
+                  <span class="size-6 rounded-full border-2 border-ink/20 transition group-hover:border-primary group-active:border-primary group-active:bg-primary-soft"></span>
+                </button>
+
+                <span class="flex-1 text-ink">{{ item.name }}</span>
+
+                <!-- Löschen: ebenfalls 44px Tippfläche -->
+                <button type="button"
+                        (click)="remove(item.id)"
+                        class="-m-2.5 flex size-11 shrink-0 items-center justify-center text-ink-soft transition hover:text-danger active:scale-90 active:text-danger"
+                        aria-label="Artikel löschen">✕</button>
+              </li>
+            }
+          </ul>
+        </div>
+      }
+    </div>
+  }
+</section>
+
+@if (checkedItems().length > 0) {
+  <section class="mt-8">
+    <h2 class="mb-2 text-sm font-semibold text-ink-soft">Erledigt</h2>
+    <ul class="space-y-2">
+      @for (item of checkedItems(); track item.id) {
+        <li class="flex items-center gap-3 rounded-control bg-surface/60 px-4 py-3 ring-1 ring-ink/5">
+          <button type="button"
+                  (click)="toggle(item.id)"
+                  class="group -m-2.5 flex size-11 shrink-0 items-center justify-center"
+                  aria-label="Artikel wieder öffnen">
+            <span class="flex size-6 items-center justify-center rounded-full bg-primary text-xs text-white transition group-hover:bg-primary-strong group-active:scale-90">✓</span>
+          </button>
+
+          <span class="flex-1 text-ink-soft line-through">{{ item.name }}</span>
+
+          <button type="button"
+                  (click)="remove(item.id)"
+                  class="-m-2.5 flex size-11 shrink-0 items-center justify-center text-ink-soft transition hover:text-danger active:scale-90 active:text-danger"
+                  aria-label="Artikel löschen">✕</button>
+        </li>
+      }
+    </ul>
+  </section>
+}

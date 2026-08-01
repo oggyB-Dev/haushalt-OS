@@ -1,11 +1,11 @@
 import { Component, inject } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../auth/auth-service';
 import { Button } from '../../shared/ui/button';
 
 @Component({
   selector: 'app-shell',
-  imports: [RouterOutlet, Button],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, Button],
   templateUrl: './shell.html',
 })
 export class Shell {

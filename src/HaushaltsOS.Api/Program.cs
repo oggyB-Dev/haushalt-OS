@@ -2,9 +2,14 @@ using System.Text;
 
 using HaushaltsOS.Api.Common.Auth;
 using HaushaltsOS.Api.Common.Persistence;
+using HaushaltsOS.Api.Common.Realtime;
 using HaushaltsOS.Api.Features.Auth.Login;
 using HaushaltsOS.Api.Features.Auth.Refresh;
 using HaushaltsOS.Api.Features.Auth.Register;
+using HaushaltsOS.Api.Features.ShoppingList.CreateItem;
+using HaushaltsOS.Api.Features.ShoppingList.DeleteItem;
+using HaushaltsOS.Api.Features.ShoppingList.GetItems;
+using HaushaltsOS.Api.Features.ShoppingList.ToggleItem;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -54,6 +59,21 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)
             )
         };
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                // WebSockets können keine Header senden, daher wird das Token als Query Parameter übergeben
+                var accessToken = context.Request.Query["access_token"];
+
+                if(!string.IsNullOrEmpty(accessToken) && context.HttpContext.Request.Path.StartsWithSegments("/hubs"))
+                {
+                    context.Token = accessToken;
+                }
+
+                return Task.CompletedTask;
+            }
+        };
     });
 
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
@@ -62,6 +82,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<CurrentUser>();
 
 builder.Services.AddAuthorization();
+builder.Services.AddSignalR();
 
 var app = builder.Build();
 
@@ -83,6 +104,12 @@ app.UseSerilogRequestLogging();
 app.MapRegister();
 app.MapLogin();
 app.MapRefresh();
+app.MapCreateItem();
+app.MapGetItems();
+app.MapToggleItem();
+app.MapDeleteItem();
 app.MapHealthChecks("/health");
+
+app.MapHub<ShoppingListHub>("/hubs/shopping-list");
 
 app.Run();
