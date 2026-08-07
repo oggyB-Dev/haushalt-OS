@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-/** Wiederverwendbare Card-Fläche im Design der App. */
+/** Wiederverwendbare Card */
 @Component({
   selector: 'app-card',
   templateUrl: './card.html',

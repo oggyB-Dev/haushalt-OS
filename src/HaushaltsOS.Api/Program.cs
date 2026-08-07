@@ -6,10 +6,12 @@ using HaushaltsOS.Api.Common.Realtime;
 using HaushaltsOS.Api.Features.Auth.Login;
 using HaushaltsOS.Api.Features.Auth.Refresh;
 using HaushaltsOS.Api.Features.Auth.Register;
+using HaushaltsOS.Api.Features.Households.GetHousehold;
 using HaushaltsOS.Api.Features.ShoppingList.CreateItem;
 using HaushaltsOS.Api.Features.ShoppingList.DeleteItem;
 using HaushaltsOS.Api.Features.ShoppingList.GetItems;
 using HaushaltsOS.Api.Features.ShoppingList.ToggleItem;
+using HaushaltsOS.Api.Features.Users.GetMe;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -109,6 +111,8 @@ app.MapGetItems();
 app.MapToggleItem();
 app.MapDeleteItem();
 app.MapHealthChecks("/health");
+app.MapGetHousehold();
+app.MapGetMe();
 
 app.MapHub<ShoppingListHub>("/hubs/shopping-list");
 
