@@ -1,2 +1,115 @@
-<h1 class="text-2xl font-extrabold text-ink">Hallo! 👋</h1>
-<p class="mt-2 font-hand text-xl text-ink-soft">Hier entsteht bald eure Einkaufsliste.</p>
+<h1 class="font-hand text-4xl leading-snug text-ink">
+  {{ greeting().salutation }}@if (firstName(); as name) {, <span class="text-accent">{{ name }}</span>}!
+</h1>
+<p class="mt-2 font-hand text-xl text-ink-soft">{{ greeting().subline }}</p>
+
+@if (household(); as info) {
+  <section class="mt-6">
+    <app-card>
+      <p class="text-sm font-semibold text-ink-soft">Euer Haushalt</p>
+      <h2 class="mt-1 text-xl font-extrabold text-ink">{{ info.name }}</h2>
+
+      <div class="mt-6">
+        <p class="mb-1.5 text-sm font-semibold text-ink">Einladungscode</p>
+
+        <div class="flex items-center gap-2">
+          <code class="flex-1 rounded-control border border-ink/10 bg-cream/50 px-4 py-3 text-lg font-bold tracking-widest text-ink">
+            {{ info.inviteCode }}
+          </code>
+
+          <app-button variant="ghost" (click)="copyInviteCode()">
+            @if (copied()) {
+              Kopiert ✓
+            } @else {
+              Kopieren
+            }
+          </app-button>
+        </div>
+
+        <!-- Rückmeldung für Screenreader, sichtbar steht sie schon im Button -->
+        <p class="sr-only" aria-live="polite">
+          @if (copied()) { Einladungscode kopiert }
+        </p>
+
+        <p class="mt-3 font-hand text-lg text-ink-soft">
+          Teile den Code, damit andere eurem Haushalt beitreten können.
+        </p>
+      </div>
+    </app-card>
+  </section>
+} @else {
+  <section class="mt-6">
+    <app-card>
+      <div class="animate-pulse" aria-hidden="true">
+        <div class="h-3.5 w-24 rounded-full bg-ink/10"></div>
+        <div class="mt-2 h-6 w-44 rounded-full bg-ink/10"></div>
+
+        <div class="mt-6">
+          <div class="h-3.5 w-32 rounded-full bg-ink/10"></div>
+
+          <div class="mt-1.5 flex items-center gap-2">
+            <div class="h-13 flex-1 rounded-control bg-ink/5"></div>
+            <div class="h-13 w-28 rounded-control bg-ink/5"></div>
+          </div>
+
+          <div class="mt-3 h-5 w-64 max-w-full rounded-full bg-ink/10"></div>
+        </div>
+      </div>
+
+      <p class="sr-only" role="status">Haushalt wird geladen…</p>
+    </app-card>
+  </section>
+}
+
+@if (shoppingListLoaded()) {
+  <a routerLink="/einkauf" class="group mt-4 block transition hover:-translate-y-0.5 active:scale-[0.99]">
+    <app-card>
+      <div class="flex items-center gap-4">
+        <!-- Gekippte Kachel wie das OS-Badge im Logo, richtet sich beim Hover auf -->
+        <span class="flex size-12 shrink-0 -rotate-6 items-center justify-center rounded-2xl bg-accent-soft text-2xl shadow-sm transition group-hover:rotate-0"
+              aria-hidden="true">🛒</span>
+
+        <div class="flex-1">
+          <h2 class="font-extrabold text-ink">
+            <span class="relative inline-block">
+              Einkaufsliste
+              <svg class="absolute -bottom-1.5 left-0 w-full" viewBox="0 0 120 8" preserveAspectRatio="none" aria-hidden="true">
+                <path d="M2 6 Q 20 1, 40 5 T 80 5 T 118 4"
+                      fill="none" stroke="var(--color-accent)" stroke-width="3" stroke-linecap="round" />
+              </svg>
+            </span>
+          </h2>
+
+          <p class="mt-2.5 font-hand text-xl text-ink-soft">
+            @if (openItemCount() === 0) {
+              Alles besorgt! ✨
+            } @else {
+              Das fehlt noch zu Hause
+            }
+          </p>
+        </div>
+
+        @if (openItemCount() > 0) {
+          <span class="-rotate-6 rounded-xl bg-primary px-3 py-1 text-xl font-extrabold text-white shadow-sm transition group-hover:rotate-0">
+            {{ openItemCount() }}<span class="sr-only"> Artikel offen</span>
+          </span>
+        }
+
+        <span class="text-xl text-ink-soft" aria-hidden="true">›</span>
+      </div>
+    </app-card>
+  </a>
+} @else {
+  <div class="mt-4">
+    <app-card>
+      <div class="flex animate-pulse items-center gap-4" aria-hidden="true">
+        <div class="size-12 shrink-0 -rotate-6 rounded-2xl bg-ink/5"></div>
+        <div class="flex-1">
+          <div class="h-4 w-28 rounded-full bg-ink/10"></div>
+          <div class="mt-3 h-5 w-40 rounded-full bg-ink/10"></div>
+        </div>
+        <div class="size-9 -rotate-6 rounded-xl bg-ink/5"></div>
+      </div>
+    </app-card>
+  </div>
+}

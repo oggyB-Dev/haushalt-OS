@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 namespace HaushaltsOS.Api.Features.ShoppingList.CreateItem;
 
 /// <summary>
-/// Endpoint zum erstellen eines Artikels
+/// Endpoint zum Erstellen eines Artikels
 /// </summary>
 public static class CreateItemEndpoint
 {
@@ -25,7 +25,7 @@ public static class CreateItemEndpoint
 
     private static async Task<IResult> HandleAsync([FromBody] CreateItemRequest request, AppDbContext dbContext, CurrentUser currentUser, IHubContext<ShoppingListHub> hub,CancellationToken cancellationToken)
     {
-        // Prüfen ob der Artikel bereits in der Einkaufsliste vorhanden ist
+        // Prüfen, ob ein nicht abgehakter Artikel mit diesem Namen bereits in der Einkaufsliste vorhanden ist
         bool exists = await dbContext.ShoppingItems
             .AnyAsync(x => x.HouseholdId == currentUser.HouseholdId
                 && x.Name == request.Name
@@ -40,7 +40,7 @@ public static class CreateItemEndpoint
             );
         }
 
-        // Dto auf Entity mappen
+        // DTO auf Entity mappen
         ShoppingItem item = new ShoppingItem
         {
             Id = Guid.NewGuid(),
