@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { computed, inject, Service } from '@angular/core';
 import { TokenStoreService } from './token-store-service';
 import { AuthResponse, LoginRequest, RegisterRequest } from '../../shared/dtos/auth.dtos';
@@ -44,12 +44,17 @@ export class AuthService {
             this.tokenStoreService.setTokens(response.accessToken, response.refreshToken);
 
             await this.realtime.connect();
-        } catch{
-            this.tokenStoreService.clear();
+        } catch(error){
+            const status = (error as HttpErrorResponse).status;
+            // Nur bei ungültigem Token abmelden, bei Serverfehlern nicht
+            const cannotReachServer = status === 0 || status >= 500;
+            if (!cannotReachServer) {
+                this.tokenStoreService.clear();
+            }
         }
     }
 
-    /* Registriert einen neuen Benutzer und meldet ihn direkt an */
+    /** Registriert einen neuen Benutzer und meldet ihn direkt an */
     async register(request: RegisterRequest): Promise<void> {
         const response = await firstValueFrom(
             this.http.post<AuthResponse>(`${this.apiUrl}/auth/register`, request)
