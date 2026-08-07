@@ -17,6 +17,9 @@ export class ShoppingList implements OnInit {
   protected readonly openItems = this.service.openItems;
   protected readonly checkedItems = this.service.checkedItems;
 
+  /* Gibt an, ob die Verbindung zum Server unterbrochen ist */
+  protected readonly offline = this.service.offline;
+
   /** Auswahlmöglichkeit für das Kategoriefeld */
   protected readonly categories = SHOPPING_CATEGORIES;
 
